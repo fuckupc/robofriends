@@ -6,6 +6,8 @@ const CardList = ({ robots }) => {
     return (
         <div>   
             {
+                /* map() loop through all the data in robots, 
+                user means each item, i means the index of user */
                 robots.map((user, i) => {
                     return (
                         <Card 
