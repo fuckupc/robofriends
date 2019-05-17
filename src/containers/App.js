@@ -5,12 +5,18 @@ import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
 import './App.css';
 
-import { setSearchField } from '../actions';
+import { setSearchField, requestRobots } from '../actions';
 
 /*send state*/
 const mapStateToProps = state => {
     return {
-        searchField: state.searchField
+        searchField: state.searchRobots.searchField,
+        robots: state.requestRobots.robots,
+        isPending: state.requestRobots.isPending,
+        error: state.requestRobots.error
+
+        // searchField: state.searchField 
+        /*It should be state.searchRobots.searchField, but now it only have one, so we deleted the reducer */
     }
 }
 
@@ -18,26 +24,32 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch) => {
     return {
         /*input box that use type *//*setSearchField listens to the action, which receives a text */
-        onSearchChange: (event) => dispatch(setSearchField(event.target.value))
+        onSearchChange: (event) => dispatch(setSearchField(event.target.value)),
+        onRequestRobots: () => dispatch(requestRobots())
     }
 }
 
 
 class App extends Component {
-    constructor() {
-        super()
-        this.state = {
-            robots: []
-            /*,searchfield:''*/
-            /*searchfield is removed because of connect */
-        }
-    }
+    // constructor() {
+    //     super()
+    //     this.state = {
+    //         robots: []
+    //         /*,searchfield:''*/
+    //         /*searchfield is removed because of connect */
+    //     }
+    // }
 
+    // componentDidMount() {
+    //     // console.log(this.props.store.getState());
+    //     fetch('https://jsonplaceholder.typicode.com/users')
+    //         .then(response => response.json())
+    //         .then(users => this.setState({ robots: users }));
+    // }
+
+    /*Now we no longer need contructor, because all the states have become props.*/
     componentDidMount() {
-        // console.log(this.props.store.getState());
-        fetch('https://jsonplaceholder.typicode.com/users')
-            .then(response => response.json())
-            .then(users => this.setState({ robots: users }));
+        this.props.onRequestRobots();
     }
 
     /*onSearchChange is removed because of connect */
@@ -48,13 +60,14 @@ class App extends Component {
     */
 
     render() {
-        const { robots } = this.state;  /*searchfield is removed because of connect */
-        const { searchField, onSearchChange } = this.props;
+        // const { robots } = this.state;  /*searchfield is removed because of connect */
+        const { searchField, onSearchChange, robots, isPending } = this.props;
         const filteredRobots = robots.filter(robot => {
             return robot.name.toLowerCase().includes(searchField.toLowerCase());
         })
         /*in case the fetch fails */
-        return (!robots.length) ?
+        // return (!robots.length) ?
+        return isPending ?
         <h1>Loading</h1> :
         (
             <div className='tc'>
